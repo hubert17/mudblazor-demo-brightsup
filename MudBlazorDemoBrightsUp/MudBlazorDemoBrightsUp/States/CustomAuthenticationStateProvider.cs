@@ -11,6 +11,8 @@ namespace MudBlazorDemoBrightsUp.States
         public static string JWTToken { get; set; } = "";
     }
 
+    public record CustomUserClaims(string Name = null!, string Email = null!);
+
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         readonly ClaimsPrincipal anonymous = new(new ClaimsIdentity());

@@ -40,7 +40,7 @@
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
             var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
             customAuthStateProvider.UpdateAuthenticationState(result!.Token);            
-            NavManager.NavigateTo("/home", forceLoad: true);
+            NavManager.NavigateTo("/songlist", forceLoad: true);
         }
         else
         {

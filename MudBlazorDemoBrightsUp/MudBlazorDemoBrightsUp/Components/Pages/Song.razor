@@ -1,5 +1,122 @@
-﻿<h3>Song</h3>
+﻿@page "/songlist2"
+@rendermode InteractiveServer
 
-@code {
+@using MudBlazorDemoBrightsUp.DTOs
+@using MudBlazorDemoBrightsUp.Models
 
+@inject IJSRuntime js
+@inject HttpClient httpClient
+@inject MudBlazor.ISnackbar snackBar
+
+
+<MudCard Elevation="25">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Add / Edit Songs</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTextField @bind-Value="song.Id" Label="Song ID" Variant="Variant.Text" Margin="Margin.Normal"></MudTextField>
+        <MudTextField @bind-Value="song.Title" Label="Title" Variant="Variant.Text" Margin="Margin.Normal"></MudTextField>
+        <MudTextField @bind-Value="song.Artist" Label="Phone Number" Variant="Variant.Text" Margin="Margin.Normal"></MudTextField>
+        <br />
+        <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Save">Save Song</MudButton>
+    </MudCardContent>
+</MudCard>
+<br />
+@* ServerData="@(new Func<TableState, Task<TableData<SongModel>>>(LoadSongs))" *@
+<MudTable Elevation="25" Items="songs" TItem="SongModel" Filter="new Func<SongModel, bool>(Search)" @bind-song="song">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Songlist</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search for Songs..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Song ID</MudTh>
+        <MudTh>Title</MudTh>
+        <MudTh>Artist</MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Song ID">@context.Id</MudTd>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Artist">@context.Artist</MudTd>
+        <MudTd DataLabel="">
+                <MudFab @OnClick="@(()=>Edit(@context.Id))" Color="Color.Primary" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" IconSize="Size.Small" />
+                <MudFab @OnClick="@(()=>Delete(@context.Id))" Color="Color.Secondary" Icon="@Icons.Material.Filled.Delete" Size="Size.Small" IconSize="Size.Small" />
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+    @code{
+
+    private bool hover = false;
+    private string searchString = "";
+
+    private SongModel song = new SongModel();
+    private List<SongModel> songs = new List<SongModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSongs(new TableState
+        {
+           Page = 1,
+           PageSize = 10
+        });
+    }
+
+    // private async Task GetSongs(TableState state)
+    // {
+    //     var response = await httpClient.GetFromJsonAsync<SongDTO>($"api/Song?page={state.Page}&pageSize={state.PageSize}");
+
+    //     songs = response!.items;
+
+    // }
+
+    public async Task<TableData<SongModel>> LoadSongs(TableState state)
+    {
+        var response = await httpClient.GetFromJsonAsync<SongDTO>($"api/Song?page={state.Page}&pageSize={state.PageSize}");
+
+        songs = response!.items;
+
+        return new TableData<SongModel>() { Items = response!.items, TotalItems = response!.totalItemCount };
+    }
+
+    private bool Search(SongModel song)
+    {
+        if (string.IsNullOrWhiteSpace(searchString)) return true;
+        if (song.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+            || song.Artist.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private async void Save()
+    {
+        await js.InvokeVoidAsync("alert", "Hello");
+        // customerService.SaveCustomer(song);
+        // song = new SongModel();
+        // snackBar.Add("Customer Saved.", Severity.Success);
+        // GetCustomers();
+    }
+    private async void Edit(int id)
+    {
+        await js.InvokeVoidAsync("alert", "Hello");
+        // await js.InvokeVoidAsync("alert", "Id: " + id);
+        // song = songs.FirstOrDefault(c => c.Id == id);
+    }
+    private void Delete(int id)
+    {
+        // customerService.DeleteCustomer(id);
+        // snackBar.Add("Customer Deleted.", Severity.Success);
+        // GetCustomers();
+    }
+
+    public class TodoPagination
+    {
+        public int TotalCount { get; set; }
+        public List<SongModel> Data { get; set; }
+    }
 }

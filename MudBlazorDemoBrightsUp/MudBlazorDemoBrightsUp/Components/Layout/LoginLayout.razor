@@ -1,0 +1,22 @@
+﻿@using MudBlazorDemoBrightsUp.Components
+@inherits LayoutComponentBase
+
+<MyMudThemeProvider />
+<MudSnackbarProvider />
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
+    <div class="d-flex flex-column mud-width-full">
+        <MudPaper Elevation="25" Class="pa-8" Width="100%" MaxWidth="500px">
+            <MudIcon Icon="@Icons.Custom.Brands.MicrosoftVisualStudio" Size="Size.Large" Style="width:100px; height:100px;" />
+            @Body
+        </MudPaper>
+    </div>
+</MudContainer>
+
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+

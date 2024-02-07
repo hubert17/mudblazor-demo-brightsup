@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MudBlazorDemoBrightsUp", "MudBlazorDemoBrightsUp\MudBlazorDemoBrightsUp.csproj", "{FD593DE1-0CF4-4482-85AB-2658A2A2A8E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MudBlazorDemoBrightsUp", "MudBlazorDemoBrightsUp\MudBlazorDemoBrightsUp.csproj", "{FD593DE1-0CF4-4482-85AB-2658A2A2A8E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

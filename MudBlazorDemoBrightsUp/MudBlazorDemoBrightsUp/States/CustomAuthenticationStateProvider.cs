@@ -2,6 +2,7 @@
 using MudBlazorDemoBrightsUp.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace MudBlazorDemoBrightsUp.States
 {
@@ -62,7 +63,7 @@ namespace MudBlazorDemoBrightsUp.States
             }
             else
             {
-                Constants.JWTToken = null;
+                Constants.JWTToken = null!;
             }
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
@@ -75,11 +76,10 @@ namespace MudBlazorDemoBrightsUp.States
             else
             {
                 var handler = new JwtSecurityTokenHandler();
-                var token = handler.ReadJwtToken(jwtToken);
+                var token = handler.ReadJwtToken(jwtToken);                
 
-                var name = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
-                var email = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email);
-                return new CustomUserClaims(name!.Value, email!.Value);
+                var name = token.Claims.FirstOrDefault(x => x.Type == "unique_name");
+                return new CustomUserClaims(name!.Value, name!.Value);
             }
 
         }

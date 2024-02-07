@@ -1,4 +1,5 @@
-﻿@page "/login"
+﻿@page "/"
+@page "/login"
 @rendermode InteractiveServer
 @layout MudBlazorDemoBrightsUp.Components.Layout.LoginLayout
 @using Microsoft.AspNetCore.Components.Authorization
@@ -39,7 +40,7 @@
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
             var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
             customAuthStateProvider.UpdateAuthenticationState(result!.Token);            
-            NavManager.NavigateTo("/", forceLoad: true);
+            NavManager.NavigateTo("/home", forceLoad: true);
         }
         else
         {

@@ -57,7 +57,7 @@
 </MudTable>
 
     @code {
-    private IEnumerable<SongModel> pagedData;
+    private List<SongModel> songs;
     private MudTable<SongModel> table;
 
     private int totalItems;
@@ -72,9 +72,7 @@
     {
         var response = await httpClient.GetFromJsonAsync<SongDTO>($"/api/Song?page={state.Page + 1}&pageSize={state.PageSize}&search={searchString}");
 
-        var songs = response.items;
-
-        //table.Items = songs;
+        songs = response.items;
 
         //pagedData = songs.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
         return new TableData<SongModel>() { TotalItems = songs.Count(), Items = songs.ToArray() };
@@ -96,8 +94,7 @@
     }
     private async void Edit(int id)
     {
-        await js.InvokeVoidAsync("alert", "Hello " + id);
-        song = table.Items.FirstOrDefault(c => c.Id == id);
+        song = songs.FirstOrDefault(x => x.Id == id);
     }
     private void Delete(int id)
     {

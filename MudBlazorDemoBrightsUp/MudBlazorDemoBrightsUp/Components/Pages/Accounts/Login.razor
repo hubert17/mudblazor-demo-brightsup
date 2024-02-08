@@ -8,9 +8,13 @@
 
 @inject NavigationManager NavManager 
 @inject HttpClient httpClient
-@inject AuthenticationStateProvider AuthStateProvider
+@* @inject AuthenticationStateProvider AuthStateProvider *@
 @inject ISnackbar snackBar
 
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IConfiguration Configuration
+
+<PageTitle>Login - MudBrightsUp Demo</PageTitle>
 
 <MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
 
@@ -24,7 +28,7 @@
 
 
 @code {
-    public LoginDTO loginDto = new();
+    public LoginDTO loginDto = new() { Username ="admin", Password = "admin123" };
     public record LoginResponse(string Username = null!, string Token = null!);
 
     async Task LoginClicked()
@@ -33,9 +37,11 @@
         if(response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
-            customAuthStateProvider.UpdateAuthenticationState(result!.Token);            
-            NavManager.NavigateTo("/songlist", forceLoad: true);
+            // var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+            // customAuthStateProvider.UpdateAuthenticationState(result!.Token);       
+            Constants.JWTToken = result!.Token;
+            await AuthStateProvider.GetAuthenticationStateAsync();
+            NavManager.NavigateTo("/home", forceLoad: true);
         }
         else
             snackBar.Add("Invalid login.", Severity.Error);

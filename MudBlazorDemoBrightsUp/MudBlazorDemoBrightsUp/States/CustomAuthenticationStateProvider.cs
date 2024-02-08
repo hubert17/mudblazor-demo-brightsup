@@ -6,6 +6,20 @@ using System.Text.Json;
 
 namespace MudBlazorDemoBrightsUp.States
 {
+    public class AddHeadersDelegatingHandler : DelegatingHandler
+    {
+        public AddHeadersDelegatingHandler() : base(new HttpClientHandler())
+        {
+        }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            request.Headers.Add("Bearer", Constants.JWTToken);  // Add whatever headers you want here
+
+            return base.SendAsync(request, cancellationToken);
+        }
+    }
+
     public static class Constants
     {
         public static string JWTToken { get; set; } = "";

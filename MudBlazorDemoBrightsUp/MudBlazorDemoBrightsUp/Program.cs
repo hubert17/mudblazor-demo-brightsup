@@ -12,17 +12,16 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMudServices();
 
-
-builder.Services.AddScoped(_ => new HttpClient
+builder.Services.AddScoped(sp => new HttpClient //(new AddHeadersDelegatingHandler())
 {
-    BaseAddress = new Uri("http://localhost:55353/")
+    BaseAddress = new Uri("http://sharpdevelopmvc.somee.com/")
 });
 
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
-
-
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -32,10 +31,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

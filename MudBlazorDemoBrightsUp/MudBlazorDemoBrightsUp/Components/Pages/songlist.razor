@@ -1,7 +1,11 @@
 ﻿@page "/songlist"
 
+@using Microsoft.AspNetCore.Authorization
 @using MudBlazorDemoBrightsUp.DTOs
 @using MudBlazorDemoBrightsUp.Models
+@using MudBlazorDemoBrightsUp.States
+
+@* @attribute [Authorize] *@
 
 @inject IJSRuntime js
 @inject HttpClient httpClient
@@ -68,6 +72,7 @@
     /// </summary>
     private async Task<TableData<SongModel>> GetServerData(TableState state)
     {
+        httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Constants.JWTToken);
         var response = await httpClient.GetFromJsonAsync<SongDTO>($"/api/Song?page={state.Page + 1}&pageSize={state.PageSize}&search={searchString}");
 
         //songs = response.items;
@@ -87,7 +92,6 @@
     private void CreateNew()
     {
         song = new();
-
     }
 
     private async void Save()

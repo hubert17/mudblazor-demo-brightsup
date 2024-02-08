@@ -37,10 +37,8 @@
         if(response.IsSuccessStatusCode)
         {
             var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
-            // var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
-            // customAuthStateProvider.UpdateAuthenticationState(result!.Token);       
-            Constants.JWTToken = result!.Token;
-            await AuthStateProvider.GetAuthenticationStateAsync();
+            var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+            customAuthStateProvider.UpdateAuthenticationState(result!.Token);       
             NavManager.NavigateTo("/home", forceLoad: true);
         }
         else

@@ -1,5 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
 @using MudBlazorDemoBrightsUp.Components
+@using MudBlazorDemoBrightsUp.States
+
+@inject NavigationManager NavManager
+
 
 <MyMudThemeProvider />
 <MyMudProviders />
@@ -10,6 +15,25 @@
         <MudSpacer />
         <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" />
+        <MudMenu StartIcon="@Icons.Material.Filled.Translate" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" Label="Swedish" Color="Color.Primary" Variant="Variant.Filled" class="mr-3">
+            <MudMenuItem>Swedish</MudMenuItem>
+            <MudMenuItem>Old Norse</MudMenuItem>
+        </MudMenu>
+        <AuthorizeView>
+            <Authorized>
+                    <MudMenu>
+                        <ActivatorContent>
+                            <MudAvatar Image="https://mudblazor.com/images/toiletvisit.jpg" />
+                        </ActivatorContent>
+                        <ChildContent>
+                            <MudMenuItem>Profile</MudMenuItem>
+                            <MudMenuItem>Theme</MudMenuItem>
+                            <MudMenuItem>Usage</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => Logout())">Sign Out</MudMenuItem>
+                        </ChildContent>
+                    </MudMenu>
+            </Authorized>
+        </AuthorizeView>
 
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
@@ -37,5 +61,11 @@
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    void Logout()
+    {
+        Constants.JWTToken = "";
+        NavManager.NavigateTo("/login", forceLoad: true);
     }
 }

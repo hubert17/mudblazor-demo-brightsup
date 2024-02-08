@@ -4,8 +4,17 @@
 @using MudBlazorDemoBrightsUp.DTOs
 @using MudBlazorDemoBrightsUp.Models
 
-@inject IJSRuntime js
 @inject HttpClient httpClient
+@inject ISnackbar snackBar
+
+<MudButton OnClick="@(() => snackBar.Add("My Close button is gone!", Severity.Normal, config => { config.ShowCloseIcon = false; }))" Variant="Variant.Filled" Color="Color.Primary">
+    Open Modified Snackbar
+</MudButton>
+
+<MudButton OnClick="@this.ShowMessage"
+           Color="Color.Success">
+    Show message
+</MudButton>
 
 <MudCard Elevation="25">
     <MudCardHeader>
@@ -86,20 +95,37 @@
 
     private async void Save()
     {
-        await js.InvokeVoidAsync("alert", "Hello");
-        // customerService.SaveCustomer(song);
-        // song = new SongModel();
-        // snackBar.Add("Customer Saved.", Severity.Success);
-        // GetCustomers();
+        HttpResponseMessage response;
+        if(song.Id == null)
+            response = await httpClient.PostAsJsonAsync("/api/Song", song);
+        else
+            response = await httpClient.PutAsJsonAsync("/api/Song", song);
+
+        if(response.IsSuccessStatusCode)
+        {
+            snackBar.Add("Song successfully saved.", Severity.Success);
+            table.ReloadServerData();
+        }        
+        else 
+            snackBar.Add("Failed to save song.", Severity.Error);
     }
+
     private async void Edit(int id)
     {
         song = songs.FirstOrDefault(x => x.Id == id);
     }
+
     private void Delete(int id)
     {
         // customerService.DeleteCustomer(id);
         // snackBar.Add("Customer Deleted.", Severity.Success);
         // GetCustomers();
+    }
+
+    void ShowMessage()
+    {
+        this.snackBar.Clear();
+        this.snackBar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
+        this.snackBar.Add("Wazzup?", Severity.Normal);
     }
 }

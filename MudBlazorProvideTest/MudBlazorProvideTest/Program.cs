@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using MudBlazor;
 using MudBlazor.Services;
-using MudBlazorDemoBrightsUp.Components;
-using MudBlazorDemoBrightsUp.States;
+using MudBlazorProvideTest.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,16 +8,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddMudServices();
-
-
-builder.Services.AddScoped(_ => new HttpClient
-{
-    BaseAddress = new Uri("http://localhost:55353/")
-});
-
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-
-
 
 var app = builder.Build();
 

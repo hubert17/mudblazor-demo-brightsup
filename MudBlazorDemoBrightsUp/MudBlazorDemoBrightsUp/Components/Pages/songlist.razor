@@ -1,29 +1,18 @@
 ﻿@page "/songlist"
-@rendermode InteractiveServer
 
 @using MudBlazorDemoBrightsUp.DTOs
 @using MudBlazorDemoBrightsUp.Models
 
+@inject IJSRuntime js
 @inject HttpClient httpClient
 @inject ISnackbar snackBar
 
-<MudButton OnClick="@(() => snackBar.Add("My Close button is gone!", Severity.Normal, config => { config.ShowCloseIcon = false; }))" Variant="Variant.Filled" Color="Color.Primary">
-    Open Modified Snackbar
-</MudButton>
 
-<MudButton OnClick="@this.ShowMessage"
-           Color="Color.Success">
-    Show message
-</MudButton>
 
 <MudCard Elevation="25">
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h6">Add / Edit Songs</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
     <MudCardContent>
-        <MudTextField @bind-Value="song.Id" Label="Song ID" Variant="Variant.Text" Margin="Margin.Normal"></MudTextField>
+        <MudButton Variant="Variant.Text" Size="Size.Large" OnClick="CreateNew">Add/Edit Songs</MudButton>
+        <MudTextField @bind-Value="song.Id" Label="Song ID" Variant="Variant.Text" Margin="Margin.Normal" Disabled="true"></MudTextField>
         <MudTextField @bind-Value="song.Title" Label="Title" Variant="Variant.Text" Margin="Margin.Normal"></MudTextField>
         <MudTextField @bind-Value="song.Artist" Label="Phone Number" Variant="Variant.Text" Margin="Margin.Normal"></MudTextField>
         <br />
@@ -34,7 +23,7 @@
 
 <MudTable ServerData="@(new Func<TableState, Task<TableData<SongModel>>>(GetServerData))" Elevation="25" Dense="true" Hover="true" @bind-song="song" @ref="table">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Songlist</MudText>
+        <MudText Typo="Typo.h6">Song List</MudText>
         <MudSpacer />
         <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -66,11 +55,11 @@
 </MudTable>
 
     @code {
-    private List<SongModel> songs;
+    private List<SongModel> pagedData = new();
     private MudTable<SongModel> table;
 
     private int totalItems;
-    private string searchString = null;
+    private string searchString = null!;
 
     private SongModel song = new SongModel();
 
@@ -81,16 +70,24 @@
     {
         var response = await httpClient.GetFromJsonAsync<SongDTO>($"/api/Song?page={state.Page + 1}&pageSize={state.PageSize}&search={searchString}");
 
-        songs = response.items;
+        //songs = response.items;
 
-        //pagedData = songs.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
-        return new TableData<SongModel>() { TotalItems = songs.Count(), Items = songs.ToArray() };
+        pagedData = response!.items; //.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
+        state.Page = response!.pageNumber;
+        state.PageSize = response!.pageSize;
+        return new TableData<SongModel>() { TotalItems = response!.totalItemCount, Items = pagedData };
     }
 
     private void OnSearch(string text)
     {
         searchString = text;
         table.ReloadServerData();
+    }
+
+    private void CreateNew()
+    {
+        song = new();
+
     }
 
     private async void Save()
@@ -104,28 +101,28 @@
         if(response.IsSuccessStatusCode)
         {
             snackBar.Add("Song successfully saved.", Severity.Success);
-            table.ReloadServerData();
+            await table.ReloadServerData();
         }        
         else 
             snackBar.Add("Failed to save song.", Severity.Error);
     }
 
-    private async void Edit(int id)
+    private void Edit(int? id)
     {
-        song = songs.FirstOrDefault(x => x.Id == id);
+        if (id == null) return;
+        song = pagedData.FirstOrDefault(x => x.Id == id);
     }
 
-    private void Delete(int id)
+    private async void Delete(int? id)
     {
-        // customerService.DeleteCustomer(id);
-        // snackBar.Add("Customer Deleted.", Severity.Success);
-        // GetCustomers();
+        if (id == null) return;
+        if(await js.InvokeAsync<bool>("confirm", "Are you sure?"))
+        {
+            var response = await httpClient.DeleteAsync($"/api/Song/{id}");
+            snackBar.Add("Customer Deleted.", Severity.Success);
+            await table.ReloadServerData();
+        }
     }
 
-    void ShowMessage()
-    {
-        this.snackBar.Clear();
-        this.snackBar.Configuration.PositionClass = Defaults.Classes.Position.BottomRight;
-        this.snackBar.Add("Wazzup?", Severity.Normal);
-    }
+
 }

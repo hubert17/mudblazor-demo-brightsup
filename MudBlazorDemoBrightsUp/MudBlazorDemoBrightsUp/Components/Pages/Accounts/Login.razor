@@ -1,16 +1,15 @@
 ﻿@page "/"
 @page "/login"
-@rendermode InteractiveServer
 
 @layout MudBlazorDemoBrightsUp.Components.Layout.LoginLayout
 @using Microsoft.AspNetCore.Components.Authorization
 @using MudBlazorDemoBrightsUp.DTOs
 @using MudBlazorDemoBrightsUp.States
 
-@inject IJSRuntime js
 @inject NavigationManager NavManager 
 @inject HttpClient httpClient
 @inject AuthenticationStateProvider AuthStateProvider
+@inject ISnackbar snackBar
 
 
 <MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
@@ -23,15 +22,10 @@
 
 <MudButton Variant="Variant.Filled" Class="mt-6" Color="Color.Primary" OnClick="LoginClicked" Size="Size.Large" FullWidth="true">Sign In</MudButton>
 
-@if(invalidLogin)
-{
-    <MudAlert Severity="Severity.Error" Class="mt-8 mud-width-full" Style="max-width:500px;" Elevation="25">Invalid login. Please try again.</MudAlert>
-}
 
 @code {
     public LoginDTO loginDto = new();
     public record LoginResponse(string Username = null!, string Token = null!);
-    bool invalidLogin = false;
 
     async Task LoginClicked()
     {
@@ -44,10 +38,7 @@
             NavManager.NavigateTo("/songlist", forceLoad: true);
         }
         else
-        {
-            invalidLogin = true;
-            return;
-        }
+            snackBar.Add("Invalid login.", Severity.Error);
     }
 
 

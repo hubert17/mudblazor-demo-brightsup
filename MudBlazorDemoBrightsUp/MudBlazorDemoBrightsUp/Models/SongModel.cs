@@ -1,8 +1,10 @@
-﻿namespace MudBlazorDemoBrightsUp.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MudBlazorDemoBrightsUp.Models
 {
     public class SongModel
     {
-        public int Id { get; set; }
+        public int? Id { get; set; } = null;
         public string Title { get; set; }
         public string Artist { get; set; }
         public string Duration { get; set; }
